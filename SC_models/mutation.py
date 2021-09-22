@@ -76,10 +76,14 @@ def pad_history(element, shape):
 # =============================================================================
 # Stochastic simulation
 # =============================================================================
-def clonal_evolution(tmax=80, death_rate=1.3, birth_rate=1.3,
-                     mutation_rate=0.1):
+def clonal_evolution(tmax=90, death_rate=1.3, birth_rate=1.3,
+                     mutation_rate=0.064):
     """ Stocastic simulation of a SC clone accumulating mutations with a
     constant rate over time.
+
+    Mutation rate in adulthood corresponds to 16 mutation/cell/year.
+    If we only observe 100 genes of a total of 25_000, this leads to a mutation
+    rate of 0.064.
 
     Parameters:
     tmax: float. Length of simulation in years.
@@ -126,12 +130,15 @@ def clonal_evolution(tmax=80, death_rate=1.3, birth_rate=1.3,
         previous_t = t
         t = t + tau
 
-        # Check if checkpoint ws crossed
+        # Check if checkpoint was crossed and update history
         if int(previous_t) != int(t):
+            # compute how many timepoints are crossed
             broadcast_shape = len(clone_history[int(previous_t)+1:int(t)+1])
+            # Append copies of the clonal state of the system to history
             clone_history[int(previous_t)+1:int(t)+1] = (
                 [clone.sum(axis=0)]*broadcast_shape)
 
+        # Check which event happened
         prob_propensities = propensities/total_propensity
         i = np.random.choice(3, p=prob_propensities)
 
