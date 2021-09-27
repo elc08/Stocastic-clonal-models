@@ -1,22 +1,28 @@
+# =============================================================================
+# Created By  : Eric Latorre
+# Created Date: 2021-08-16
+# =============================================================================
+"""Birth and death model for clonality where SCs acquire mutations following
+a Gaussian process.
+"""
+# =============================================================================
+# Imports
+# =============================================================================
 import numpy as np
-from numba import jit
 
-
-#@jit(nopython=True)
-def cbd(t, lamb=1.3, mu=1.3, tmax=90, from_zero=False):
+def bd(t, lamb=1.3, mu=1.3, tmax=90, from_zero=False):
     ''' Stochastic B-D model of a clone.
     Parameters:
     - t: float. Start time
     - lamb: float. Birth rate (events/ year).
     - mu: float. Death (events/ year).
     - tmax: int age of individuals for stopping time
-    - x0 = initial population of the clone
-        HSC = amount of hematopoietic stem cells
+    - from_zero: Bool. Choose wether checkpoints are recorded from clone birth
+                       or from time 0.
+    Returns:
+    - checkpoints: Array. Recorded population of cells every year.
     '''
 
-    # set a seed for reproducibility
-    # the seed shouldn't be applied for the test scenario of
-    # all mutations starting at 0
 
     if from_zero is False:
         # compute first recorded time_point
