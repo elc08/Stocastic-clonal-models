@@ -3,4 +3,4 @@
 echo "Installing and activating conda environment."
 
 eval "$(conda shell.bash hook)"
-conda env create --file env/stochastic_env.yml --name stochastic_env
+conda env create --file stochastic_env.yml --name stochastic_env
