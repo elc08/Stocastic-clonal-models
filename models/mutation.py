@@ -85,12 +85,15 @@ def clonal_evolution(tmax=90, death_rate=1.3, birth_rate=1.3,
     If we only observe 100 genes of a total of 25_000, this leads to a mutation
     rate of 0.064.
 
-    Parameters:
+    Parameters
+    ----------
     tmax: float. Length of simulation in years.
     birth_rate: float. Birth rate /cell/year.
     death_rate: float. Death rate /cell/year.
     mutation_rate: float. Mutation rate /cell/year.
-    Returns:
+
+    Returns
+    ----------
     clone_history: array. Each row corresponds to a SC and
                           each column to the binary presence of a mutation.
     """
@@ -160,3 +163,45 @@ def clonal_evolution(tmax=90, death_rate=1.3, birth_rate=1.3,
                               for i in clone_history], dtype=object)
 
     return clone_history
+
+
+def delete_ghosts(clone):
+    """ Delete mutations that were born and died out within checkpoints.
+
+    Parameters
+    ----------
+    - clone: Array. Clone steming from initial SC.
+
+    Returns
+    ----------
+    -filter_clone: Array. Filter clonal array wihtout empty mutations.
+    """
+
+    # Locate columns of empty mutations
+    idx = np.argwhere(np.all(clone[..., :] == 0, axis=0))
+    # delete empty columns
+    filter_clone = np.delete(clone, idx, axis=1)
+    return filter_clone
+
+
+def filter_clone(clone):
+    """ Delete rows after clonal death.
+
+    Parameters
+    ----------
+    - clone: Array. Clone steming from initial SC.
+
+    Returns
+    ----------
+    -filter_clone: Array. Filter clonal array wihtout empty rows.
+    """
+
+    # Find extinction time using clone size
+    extinction_time = (clone[:, 0] == 0).argmax()
+
+    if extinction_time > 0:
+        # if there is an extinction time, filter all rows after extinction.
+        filtered_clone = clone[:extinction_time+1, :]
+    else:
+        filtered_clone = clone
+    return filtered_clone
